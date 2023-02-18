@@ -8,9 +8,13 @@
 import Foundation
 
 
-var board = Array(repeating: Array(repeating: 0, count: 10), count: 10)
+var board = Array(repeating: Array(repeating: 0, count: 11), count: 11)
 // vopros po vvodu parametra?
-var VisibleB = Array(repeating: Array(repeating: "*", count: 10), count: 10)
+var VisibleB = Array(repeating: Array(repeating: "*", count: 11), count: 11)
+let alphabet = ["0", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+
+var posX = Int()
+
 
 //---------------------------TEST------------------------------
 //for element in board.enumerated() {
@@ -43,7 +47,7 @@ func cleanSpace(x: Int, y:Int, sizeMap: Int){
         VisibleB[x][y] = "-"
         for i in x-1...x+1{
             for j in y-1...y+1{
-                if (i>=0 && i<=sizeMap) && (j>=0 && j<=sizeMap){
+                if (i>=1 && i<=sizeMap) && (j>=1 && j<=sizeMap){
                     if (board[i][j] == 0){
                         cleanSpace(x: i, y: j, sizeMap: board.count-1)
                     }
@@ -64,12 +68,12 @@ func Shoot (i: Int, j: Int){
 }
 
 func checkMine (sizeMap: Int) {
-    for i in 0...sizeMap{
-        for j in 0...sizeMap{
+    for i in 1...sizeMap{
+        for j in 1...sizeMap{
             if (board[i][j] == 9){
                 for x in i-1...i+1{
                     for y in j-1...j+1{
-                        if (y>=0 && y<=sizeMap) && (x>=0 && x<=sizeMap){
+                        if (y>=1 && y<=sizeMap) && (x>=1 && x<=sizeMap){
                             if (board[x][y] != 9){
                                 board[x][y] = board[x][y]+1
                                 VisibleB[x][y] = String(board[x][y])
@@ -85,8 +89,8 @@ func checkMine (sizeMap: Int) {
 func minesOnBoard (amount: Int, sizeMap: Int){
     var k = 1
     while 1...amount ~= k {
-        let i = Int.random(in: 0...sizeMap)
-        let j = Int.random(in: 0...sizeMap)
+        let i = Int.random(in: 1...sizeMap)
+        let j = Int.random(in: 1...sizeMap)
         if (board[i][j] != 9){
             board[i][j] = 9
 //          VisibleB[i][j] = "0"
@@ -95,33 +99,71 @@ func minesOnBoard (amount: Int, sizeMap: Int){
     } // Chek, how many mines we are put on board.
 }
   
+func nameLine(){
+    VisibleB[0][0] = " "
+    for k in 1...board.count-1{
+        VisibleB[0][k] = String(k)
+        VisibleB[k][0] = alphabet[k]
+    }
+}
+
+func checkChar(x: String, y: Int){
+    var flag = false
+   
+    let y = y
+    let x = x
+        
+    if ( y>=1 && y<=10){
+        for (index, _) in alphabet.enumerated(){
+            if (x == alphabet[index]){
+                posX = index
+                flag = true
+            }
+        }
+    }
+    
+    if flag == false {
+        print("Position x = \(x) and y = \(y) are not correct")
+    } else {
+        print("Position x = \(x) and y = \(y) are correct")
+    }
+}
+
 
 minesOnBoard(amount: 10, sizeMap: board.count-1)
 checkMine (sizeMap: board.count-1)
 
+// -> print the board
+nameLine()
 print(desk: VisibleB)
+// -> print the board end.
+
 
 var flag = true
-
 repeat {
-    print("Please enter your cordinate x and y: ", terminator: " ")
-    
+    print("Please enter your cordinate x: a-j and y: 1-10 ", terminator: " ")
+    print()
     let input = readLine()!
-    let pointXY = input.split(separator: " ")
-  
-    var x = Int()
-    x = Int(pointXY[0])!
+//    print(input)
     
+    let pointXY = input.split(separator: " ")
+    
+ //   print(pointXY)
+    
+    var x = String()
+    x = String(pointXY[0])
+ 
     var y = Int()
     y = Int(pointXY[1])!
-    
-    Shoot(i: x, j: y)
+        
+    checkChar(x: x, y: y)
+    Shoot(i: posX, j: y)
     
     print()
     print(desk: VisibleB)
     print()
     
-   if (board[x][y] == 9){
+   if (board[posX][y] == 9){
       flag = false
     }
 } while flag
